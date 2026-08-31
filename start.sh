@@ -1,8 +1,6 @@
 #!/bin/sh
 
-python3 -m venv ./pwbvenv
-source ./pwbvenv/bin/activate
-pip install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
 cat > user-config.py <<EOF
 # -*- coding: utf-8 -*-
