@@ -7,10 +7,10 @@ def get_voter_list_from_database(timestamp: str, b_timestamp: str) -> list[str]:
     voter_list: list[str] = []
 
     conn = pymysql.connect(
-        host=os.environ['BOTDBHOST'],
-        user=os.environ['BOTDBUSER'],
-        password=os.environ['BOTDBPASSWD'],
-        database=os.environ['BOTDBNAME'],
+        host=os.environ['WIKIMEDIADBHOST'],
+        user=os.environ['TOOL_REPLICA_USER'],
+        password=os.environ['TOOL_REPLICA_PASSWORD'],
+        database=os.environ['WIKIMEDIADBNAME'],
         cursorclass=pymysql.cursors.DictCursor
     )
 
@@ -65,8 +65,8 @@ def get_voter_list_from_wikipedia() -> list[str]:
 def get_new_election() -> list[tuple[int, str, str]]:
     conn = pymysql.connect(
         host=os.environ['BOTDBHOST'],
-        user=os.environ['BOTDBUSER'],
-        password=os.environ['BOTDBPASSWD'],
+        user=os.environ['TOOL_TOOLSDB_USER'],
+        password=os.environ['TOOL_TOOLSDB_PASSWORD'],
         database=os.environ['BOTDBNAME'],
         cursorclass=pymysql.cursors.DictCursor
     )
