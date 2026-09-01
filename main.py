@@ -13,7 +13,9 @@ def update_list(election_id: int, timestamp: str, b_timestamp: str) -> bool:
     page_preload = ""
 
     if election_id == 0:
-        main_list_page = Page(Site('wikipedia:zh', os.getenv('MAINLISTPAGENAME')))
+        site = Site('wikipedia:zh')
+        site.login()
+        main_list_page = Page(site, os.environ['MAINLISTPAGENAME'])
         voter_list_from_database: list[str] = database.get_voter_list_from_database(timestamp, b_timestamp)
 
         voter_list_text = "\n".join(voter_list_from_database)
@@ -26,7 +28,9 @@ def update_list(election_id: int, timestamp: str, b_timestamp: str) -> bool:
             return False
     else:
         list_prefix: str = os.environ['LISTPREFIX']
-        list_page = Page(Site('wikipedia:zh', list_prefix + str(election_id)))
+        site = Site('wikipedia:zh')
+        site.login()
+        list_page = Page(site, list_prefix + str(election_id))
         list_page.text = page_preload + "\n".join(database.get_voter_list_from_database(timestamp, b_timestamp))
         list_page.save(summary="机器人自动创建新列表")
         return True

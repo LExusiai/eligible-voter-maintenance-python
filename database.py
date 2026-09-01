@@ -58,7 +58,8 @@ def get_voter_list_from_database(timestamp: str, b_timestamp: str) -> list[str]:
 
 
 def get_voter_list_from_wikipedia() -> list[str]:
-    main_list_page = Page(Site('wikipedia:zh', os.environ['MAINLISTPAGENAME']))
+    site = Site('wikipedia:zh')
+    main_list_page = Page(site, os.environ['MAINLISTPAGENAME'])
     voter_list_from_wikipedia: list[str] = main_list_page.text.splitlines()
     return voter_list_from_wikipedia[1:]
 
