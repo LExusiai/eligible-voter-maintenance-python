@@ -55,13 +55,11 @@ def get_voter_list_from_database(timestamp: str, b_timestamp: str) -> list[str]:
 
             return voter_list
 
-
-
 def get_voter_list_from_wikipedia() -> list[str]:
     site = Site('wikipedia:zh')
     main_list_page = Page(site, os.environ['MAINLISTPAGENAME'])
     voter_list_from_wikipedia: list[str] = main_list_page.text.splitlines()
-    return voter_list_from_wikipedia[1:]
+    return voter_list_from_wikipedia[2:-1]
 
 def get_new_election() -> list[tuple[int, str, str]]:
     conn = pymysql.connect(
@@ -81,3 +79,23 @@ def get_new_election() -> list[tuple[int, str, str]]:
                 (i["election_id"], i["timestamp"], i["b_timestamp"])
                 for i in result
             ]
+
+def mark_election(election_id: int, status: str) -> int:
+    conn = pymysql.connect(
+        host=os.environ['BOTDBHOST'],
+        user=os.environ['TOOL_TOOLSDB_USER'],
+        password=os.environ['TOOL_TOOLSDB_PASSWORD'],
+        database=os.environ['BOTDBNAME'],
+        cursorclass=pymysql.cursors.DictCursor,
+        autocommit=True
+    )
+
+    query = "UPDATE secure_poll SET status = %(status)s WHERE election_id = %(election_id)s;"
+    with conn:
+        with conn.cursor() as cursor:
+            result = cursor.execute(query, {
+                "election_id": election_id,
+                "status": status,
+            })
+
+            return result

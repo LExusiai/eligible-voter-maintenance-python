@@ -10,7 +10,7 @@ import database
 # 是1，一般选举的election id是投票页面的页面id，不过这个有jimmy xu老师的脚本
 # 就不写了。
 def update_list(election_id: int, timestamp: str, b_timestamp: str) -> bool:
-    page_preload = ""
+    page_preload = "{{Wikipedia:人事任免投票资格/名单/header}}"
 
     if election_id == 0:
         site = Site('wikipedia:zh')
@@ -19,7 +19,7 @@ def update_list(election_id: int, timestamp: str, b_timestamp: str) -> bool:
         voter_list_from_database: list[str] = database.get_voter_list_from_database(timestamp, b_timestamp)
 
         voter_list_text = "\n".join(voter_list_from_database)
-        main_list_page.text = page_preload + voter_list_text
+        main_list_page.text = page_preload + "\n" + "<pre>" + voter_list_text + "</pre>"
         main_list_page.save(summary="机器人自动更新清单")
 
         if database.get_voter_list_from_wikipedia() == voter_list_from_database:
@@ -38,9 +38,9 @@ def update_list(election_id: int, timestamp: str, b_timestamp: str) -> bool:
 async def check_main_list_update() -> None:
     while True:
         time_period = dt.timedelta(days=180)
-        start_time = dt.date.today() - time_period
+        start_time = dt.datetime.now() - time_period
 
-        b_timestamp: str = dt.date.today().strftime('%Y%m%d%H%M%S')
+        b_timestamp: str = dt.datetime.now().strftime('%Y%m%d%H%M%S')
         timestamp: str = start_time.strftime('%Y%m%d%H%M%S')
 
         latest_main_list: list[str] = await asyncio.to_thread(database.get_voter_list_from_database, timestamp, b_timestamp)
@@ -59,14 +59,13 @@ async def check_sub_list_update() -> None:
         new_election_list: list[tuple[int, str, str]] = await asyncio.to_thread(database.get_new_election)
         if new_election_list:
             for election in new_election_list:
-                b_timestamp: str = dt.date.today().strftime('%Y%m%d%H%M%S')
-                update: bool = await asyncio.to_thread(update_list, election[0], election[1], b_timestamp)
+                update: bool = await asyncio.to_thread(update_list, election[0], election[1], election[2])
                 if update:
-                    print("OK")
+                    flag: int = database.mark_election(election[0], "checked")
                 else:
-                    print("Error")
+                    flag: int = database.mark_election(election[0], "failed")
         else:
-            await asyncio.sleep(10)
+            await asyncio.sleep(30)
 
 async def main():
     await asyncio.gather(
