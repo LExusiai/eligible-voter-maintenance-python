@@ -23,7 +23,7 @@ def update_list(election_id: int, timestamp: str, b_timestamp: str) -> bool:
         voter_list_from_database: list[str] = database.get_voter_list_from_database(timestamp, b_timestamp)
 
         voter_list_text = "\n".join(voter_list_from_database)
-        main_list_page.text = page_preload + "\n" + "<pre>" + voter_list_text + "</pre>"
+        main_list_page.text = page_preload + "\n" + "<pre>" + "\n" + voter_list_text + "\n" + "</pre>"
         main_list_page.save(summary="机器人自动更新清单")
 
         if database.get_voter_list_from_wikipedia() == voter_list_from_database:
@@ -38,7 +38,7 @@ def update_list(election_id: int, timestamp: str, b_timestamp: str) -> bool:
         site = pywikibot.Site('wikipedia:zh')
         site.login()
         list_page = Page(site, list_prefix + str(election_id))
-        list_page.text = page_preload + "\n".join(database.get_voter_list_from_database(timestamp, b_timestamp))
+        list_page.text = page_preload + "\n" + "<pre>" + "\n" + "\n".join(database.get_voter_list_from_database(timestamp, b_timestamp))+ "\n" + "</pre>"
         list_page.save(summary="机器人自动创建新列表")
         return True
 
