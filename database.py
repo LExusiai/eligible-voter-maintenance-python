@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from pywikibot import Page, Site
+from pywikibot import Page
 import os
 import pymysql
+import pywikibot
 
 def get_voter_list_from_database(timestamp: str, b_timestamp: str) -> list[str]:
     voter_list: list[str] = []
@@ -56,7 +57,10 @@ def get_voter_list_from_database(timestamp: str, b_timestamp: str) -> list[str]:
             return voter_list
 
 def get_voter_list_from_wikipedia() -> list[str]:
-    site = Site('wikipedia:zh')
+    pywikibot.config.usernames['wikipedia']['zh'] = os.environ['WPB_BOTUSERNAME']
+    authenticate = (os.environ['BOTWMCONTOKEN'], os.environ['BOTWMCONSEC'], os.environ['BOTWMACCESSTOKEN'], os.environ['BOTWMACCESSSEC'])
+    pywikibot.config.authenticate['zh.wikipedia.org'] = authenticate
+    site = pywikibot.Site('wikipedia:zh')
     main_list_page = Page(site, os.environ['MAINLISTPAGENAME'])
     voter_list_from_wikipedia: list[str] = main_list_page.text.splitlines()
     return voter_list_from_wikipedia[2:-1]
