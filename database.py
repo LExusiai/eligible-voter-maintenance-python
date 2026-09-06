@@ -16,7 +16,7 @@ def get_voter_list_from_database(timestamp: str, b_timestamp: str) -> list[str]:
     )
 
     query = '''
-	SELECT u.user_name as username
+	SELECT CONVERT(u.user_name USING utf8mb4) AS username
 	FROM user u
 	INNER JOIN actor a ON u.user_id = a.actor_user
 	INNER JOIN(
