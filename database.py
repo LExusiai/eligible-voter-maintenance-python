@@ -38,7 +38,7 @@ def get_voter_list_from_database(timestamp: str, b_timestamp: str) -> list[str]:
 			FROM user_groups ug
 			WHERE ug.ug_group = 'bot'
 		)
-		AND u.user_name NOT LIKE 'Renamed user %'
+		AND u.user_name NOT LIKE 'Renamed user %%'
 	ORDER BY u.user_name;
 '''
 
