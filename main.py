@@ -14,9 +14,9 @@ def update_list(election_id: int, timestamp: str, b_timestamp: str) -> bool:
     page_preload = "{{Wikipedia:人事任免投票资格/名单/header}}"
 
     if election_id == 0:
-        pywikibot.config.usernames['wikipedia']['zh'] = os.environ['WPB_BOTUSERNAME']
+        pywikibot.config.usernames['wikipedia']['zh'] = os.environ['WPB_BOTUSERNAME'] # type: ignore
         authenticate = (os.environ['BOTWMCONTOKEN'], os.environ['BOTWMCONSEC'], os.environ['BOTWMACCESSTOKEN'], os.environ['BOTWMACCESSSEC'])
-        pywikibot.config.authenticate['zh.wikipedia.org'] = authenticate
+        pywikibot.config.authenticate['zh.wikipedia.org'] = authenticate # type: ignore
         site = pywikibot.Site('wikipedia:zh')
         site.login()
         main_list_page = Page(site, os.environ['MAINLISTPAGENAME'])
@@ -32,9 +32,9 @@ def update_list(election_id: int, timestamp: str, b_timestamp: str) -> bool:
             return False
     else:
         list_prefix: str = os.environ['LISTPREFIX']
-        pywikibot.config.usernames['wikipedia']['zh'] = os.environ['WPB_BOTUSERNAME']
+        pywikibot.config.usernames['wikipedia']['zh'] = os.environ['WPB_BOTUSERNAME'] # type: ignore
         authenticate = (os.environ['BOTWMCONTOKEN'], os.environ['BOTWMCONSEC'], os.environ['BOTWMACCESSTOKEN'], os.environ['BOTWMACCESSSEC'])
-        pywikibot.config.authenticate['zh.wikipedia.org'] = authenticate
+        pywikibot.config.authenticate['zh.wikipedia.org'] = authenticate # type: ignore
         site = pywikibot.Site('wikipedia:zh')
         site.login()
         list_page = Page(site, list_prefix + str(election_id))

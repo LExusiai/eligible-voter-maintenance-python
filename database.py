@@ -57,14 +57,33 @@ def get_voter_list_from_database(timestamp: str, b_timestamp: str) -> list[str]:
             return voter_list
 
 def get_voter_list_from_wikipedia() -> list[str]:
-    pywikibot.config.usernames['wikipedia']['zh'] = os.environ['WPB_BOTUSERNAME']
+    pywikibot.config.usernames['wikipedia']['zh'] = os.environ['WPB_BOTUSERNAME'] # type: ignore
     authenticate = (os.environ['BOTWMCONTOKEN'], os.environ['BOTWMCONSEC'], os.environ['BOTWMACCESSTOKEN'], os.environ['BOTWMACCESSSEC'])
-    pywikibot.config.authenticate['zh.wikipedia.org'] = authenticate
+    pywikibot.config.authenticate['zh.wikipedia.org'] = authenticate # type: ignore
     site = pywikibot.Site('wikipedia:zh')
     main_list_page = Page(site, os.environ['MAINLISTPAGENAME'])
     voter_list_from_wikipedia: list[str] = main_list_page.text.splitlines()
     return voter_list_from_wikipedia[2:-1]
 
+def new_election(timestamp: str, b_timestamp: str) -> int:
+    conn = pymysql.connect(
+        host=os.environ['BOTDBHOST'],
+        user=os.environ['TOOL_TOOLSDB_USER'],
+        password=os.environ['TOOL_TOOLSDB_PASSWORD'],
+        database=os.environ['BOTDBNAME'],
+        cursorclass=pymysql.cursors.DictCursor
+    )
+
+    query = "INSERT INTO secure_poll (timestamp, b_timestamp, status) VALUES (%(start_time)s, %(time)s, 'uncheck');"
+    with conn:
+        with conn.cursor() as cursor:
+            result = cursor.execute(query, {
+                "start_time": timestamp,
+                "time": b_timestamp,
+            })
+            election_id = cursor.lastrowid
+            return election_id
+ 
 def get_new_election() -> list[tuple[int, str, str]]:
     conn = pymysql.connect(
         host=os.environ['BOTDBHOST'],
