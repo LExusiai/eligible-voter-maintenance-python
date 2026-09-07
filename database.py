@@ -71,7 +71,8 @@ def new_election(timestamp: str, b_timestamp: str) -> int:
         user=os.environ['TOOL_TOOLSDB_USER'],
         password=os.environ['TOOL_TOOLSDB_PASSWORD'],
         database=os.environ['BOTDBNAME'],
-        cursorclass=pymysql.cursors.DictCursor
+        cursorclass=pymysql.cursors.DictCursor,
+		autocommit=True
     )
 
     query = "INSERT INTO secure_poll (timestamp, b_timestamp, status) VALUES (%(start_time)s, %(time)s, 'uncheck');"
